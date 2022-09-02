@@ -1,40 +1,57 @@
 import webbrowser
 
 import bpy
+import toml
 
 from .register_class import _get_cls
 
+INFO_TOML = "info.toml"
 
-class COU_OT_open_url(bpy.types.Operator):
-    bl_idname = "object.open_url"
-    bl_label = "Open URL"
-    bl_description = "Open the URL of a text object."
 
-    def execute(self, context):
-        lst = list(bpy.data.objects)
-        if context.view_layer.objects.active:
-            lst = [context.view_layer.objects.active] + lst
-        lst = [obj for obj in lst if obj.type == "FONT" and obj.data.body.startswith("http")]
-        if lst:
-            webbrowser.open(lst[0].data.body)
-        return {"FINISHED"}
+def get_info_toml(force: bool = False):
+    """INFO_TOML取得
+
+    :param force: 存在しなければ作成する, defaults to False
+    :return: Textオブジェクト
+    """
+    txt = bpy.data.texts.get(INFO_TOML)
+    if not txt:
+        txt = bpy.data.texts.new(INFO_TOML)
+        if scr := bpy.data.screens.get("Scripting"):
+            if area := next(iter(a for a in scr.areas if a.type == "TEXT_EDITOR"), None):
+                area.spaces[0].text = txt
+    return txt
 
 
 class COU_OT_add_url(bpy.types.Operator):
     bl_idname = "object.add_url"
     bl_label = "Add URL"
-    bl_description = "Add the a text object of URL."
+    bl_description = "Add URL of clipboard."
 
     def execute(self, context):
         s = bpy.context.window_manager.clipboard
         if not (isinstance(s, str) and s.startswith("http")):
-            self.report({"WARNING"}, "Copy URL")
+            self.report({"WARNING"}, "You must copy URL.")
             return {"CANCELLED"}
-        bpy.ops.object.text_add(radius=0.1)
-        text = bpy.context.object
-        text.data.body = s
-        text.name = "URL"
-        text.hide_render = True
+        txt = get_info_toml(True)
+        dc = toml.loads(txt.as_string())
+        dc["url"] = " ".join(set(dc.get("url", "").split()) | {s})
+        txt.write(toml.dumps(dc))
+        return {"FINISHED"}
+
+
+class COU_OT_open_urls(bpy.types.Operator):
+    bl_idname = "object.open_urls"
+    bl_label = "Open URLs"
+    bl_description = "Open the URLs of info.toml."
+
+    def execute(self, context):
+        if not (txt := get_info_toml()):
+            self.report({"WARNING"}, "No URLs")
+            return {"CANCELLED"}
+        dc = toml.loads(txt.as_string())
+        for url in dc.get("url", "").split():
+            webbrowser.open(url)
         return {"FINISHED"}
 
 

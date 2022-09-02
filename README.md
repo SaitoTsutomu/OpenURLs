@@ -1,22 +1,23 @@
-## Blender Add-on: OpenURL
+## Blender Add-on: OpenURLs
 
-Add a text object of URL from the clipboard.
-And, open the URL of a text object.
+Add URL to info.toml from the clipboard.
+And, open the URLs of info.toml.
 
 ## Installation
 
-- Download https://github.com/SaitoTsutomu/OpenURL/archive/refs/heads/master.zip
+- Download https://github.com/SaitoTsutomu/OpenURLs/archive/refs/heads/master.zip
 - Start Blender.
 - Edit menu -> Preferences
   - Select the "Add-ons" tab.
   - Press the "Install ...".
   - Select the downloaded ZIP file and press the button "Install Add-on".
-  - Check the "Object: OpenURL".
+  - Check the "Object: OpenURLs".
 
 ## Usage
 
 - Copy URL.
 - Select the Object Menu -> Add URL.
 
-- Select a text.
-- Select the Object Menu -> Open URL.
+- Select the Object Menu -> Open URLs.
+
+Information is in info.toml of bpy.data.texts.
