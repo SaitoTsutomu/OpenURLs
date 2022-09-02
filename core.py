@@ -36,6 +36,7 @@ class COU_OT_add_url(bpy.types.Operator):
         txt = get_info_toml(True)
         dc = toml.loads(txt.as_string())
         dc["url"] = " ".join(set(dc.get("url", "").split()) | {s})
+        txt.clear()
         txt.write(toml.dumps(dc))
         return {"FINISHED"}
 
