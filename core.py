@@ -1,4 +1,5 @@
 import webbrowser
+from datetime import date
 
 import bpy
 import toml
@@ -17,7 +18,7 @@ def get_info_toml(force: bool = False):
     txt = bpy.data.texts.get(INFO_TOML)
     if not txt:
         txt = bpy.data.texts.new(INFO_TOML)
-        txt.write(toml.dumps(dict(url="", author="", tag="")))
+        txt.write(toml.dumps(dict(url="", date="", author="", tag="")))
         if scr := bpy.data.screens.get("Scripting"):
             if area := next(iter(a for a in scr.areas if a.type == "TEXT_EDITOR"), None):
                 area.spaces[0].text = txt
@@ -37,6 +38,7 @@ class COU_OT_add_url(bpy.types.Operator):
         txt = get_info_toml(True)
         dc = toml.loads(txt.as_string())
         dc["url"] = " ".join(set(dc.get("url", "").split()) | {s})
+        dc["date"] = date.today()
         txt.clear()
         txt.write(toml.dumps(dc))
         return {"FINISHED"}
