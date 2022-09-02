@@ -17,6 +17,7 @@ def get_info_toml(force: bool = False):
     txt = bpy.data.texts.get(INFO_TOML)
     if not txt:
         txt = bpy.data.texts.new(INFO_TOML)
+        txt.write(toml.dumps(dict(url="", author="", tag="")))
         if scr := bpy.data.screens.get("Scripting"):
             if area := next(iter(a for a in scr.areas if a.type == "TEXT_EDITOR"), None):
                 area.spaces[0].text = txt
