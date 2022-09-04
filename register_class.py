@@ -6,6 +6,10 @@ import bpy
 from bpy.types import Operator, Panel
 
 
+def operator(layout, cls, **kwargs):
+    return layout.operator(cls.bl_idname, text=cls.bl_label, **kwargs)
+
+
 def _get_cls(module_name: str) -> list[type]:
     """モジュール内のUIクラスのリストを取得
 
