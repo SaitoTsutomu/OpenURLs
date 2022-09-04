@@ -20,7 +20,8 @@ def get_info_toml(force: bool = False):
         txt = bpy.data.texts.new(INFO_TOML)
         txt.write(toml.dumps(dict(url="", date="", author="", tag="")))
         if scr := bpy.data.screens.get("Scripting"):
-            if area := next(iter(a for a in scr.areas if a.type == "TEXT_EDITOR"), None):
+            areas = [(a.height, a) for a in scr.areas if a.type == "TEXT_EDITOR"]
+            if area := next(iter(sorted(areas)), (0, None))[1]:
                 area.spaces[0].text = txt
     return txt
 
@@ -41,6 +42,7 @@ class COU_OT_add_url(bpy.types.Operator):
         dc["date"] = date.today()
         txt.clear()
         txt.write(toml.dumps(dc))
+        txt.cursor_set(3, character=7)
         return {"FINISHED"}
 
 
